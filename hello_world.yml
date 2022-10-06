@@ -13,7 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Setup Python to version ${{ inputs.python_version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python_version }}
       - name: Print the Python Version and Greeting
         run: |
-          PY_VER=`python -V`
+          PY_VER=`python3 -V`
           echo "Hello ${{ inputs.who_dis }}, the Python version is $PY_VER"
