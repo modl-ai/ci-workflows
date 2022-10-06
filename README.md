@@ -1,2 +1,2 @@
 # ci-workflows
-Repository of Reusable Workflows - V1
+Repository of Reusable Workflows
