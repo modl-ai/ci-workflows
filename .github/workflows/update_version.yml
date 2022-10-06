@@ -5,14 +5,14 @@ on:
         required: false
         type: string
         default: .bumpversion.cfg
-      gitversion-config-path: 
+      gitversion-config-path:
         required: false
         type: string
         default: GitVersion.yml
-      use-pip-semver:
+      use-nuget-semver:
         required: false
         type: boolean
-        default: false 
+        default: false
     outputs:
       NuGetSemVerTag:
         description: "SemVer Tag - SemVer Tag - Cleaned up so that NuGet can correctly consume it"
@@ -49,7 +49,7 @@ jobs:
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: '5.x'
-      - name:
+      - name: Run GitVersion
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0.9.7
         with:
@@ -57,7 +57,7 @@ jobs:
           configFilePath: ${{ inputs.gitversion-config-path }}
 
   clean-up-version-stamp:
-    name: Create the SemVer Tags for the different needs we have (NuGet, PIP, Docker) 
+    name: Create the SemVer Tags for the different needs we have (NuGet, PIP, Docker)
     runs-on: ubuntu-latest
     needs: [calculate-new-version]
     outputs:
@@ -69,10 +69,10 @@ jobs:
       - uses: jwalton/gh-find-current-pr@v1
         id: find-pr
         with:
-          state: open 
+          state: open
 
       - name: Clean SemVer Tags for different needs
-        id: clean-semver 
+        id: clean-semver
         run: |
           if [[ "${{ needs.calculate-new-version.outputs.BranchName }}" == "main" ]]; then
             echo "::set-output name=new_version_pip::${{ needs.calculate-new-version.outputs.MajMinPatch }}"
@@ -93,7 +93,7 @@ jobs:
       - name: Get Tag to use for Bump2Version
         id: get-b2v-tag
         run: |
-          if ${{ inputs.use-pip-semver }}; then
+          if ${{ inputs.use-nuget-semver }}; then
             echo "::set-output name=bump_2_version_semver::${{ needs.clean-up-version-stamp.outputs.PIPSemVerTag }}"
           else ## Use Nuget Version instead
             echo "::set-output name=bump_2_version_semver::${{ needs.clean-up-version-stamp.outputs.NuGetSemVerTag }}"
