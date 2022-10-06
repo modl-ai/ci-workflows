@@ -12,7 +12,7 @@ on:
       use-pip-semver:
         required: false
         type: boolean
-        default: true
+        default: false 
     outputs:
       NuGetSemVerTag:
         description: "SemVer Tag - SemVer Tag - Cleaned up so that NuGet can correctly consume it"
