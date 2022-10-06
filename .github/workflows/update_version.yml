@@ -14,16 +14,21 @@ on:
         type: boolean
         default: true
     outputs:
-      ## SemVer Tag - Cleaned up so that NuGet can correctly consume it
-      NuGetSemVerTag: ${{ jobs.clean-up-version-stamp.outputs.NuGetSemVerTag }}
-      ## SemVer Tag - Cleaned up so that PIP can correctly consume it 
-      PIPSemVerTag: ${{ jobs.clean-up-version-stamp.outputs.PIPSemVerTag }}
-      ## Semver Tag - Cleaned up so that Docker can correctly consume it
-      DockerSemVerTag: ${{ jobs.clean-up-version-stamp.outputs.DockerSemVerTag }}
-      ## Commits in the Branch - Useful to name other things
-      CommitsInBranch: ${{ jobs.calculate-new-version.outputs.Commits }}
-      ## Name of the Branch - Useful to name other things
-      BranchName: ${{ jobs.calculate-new-version.outputs.BranchName }}
+      NuGetSemVerTag:
+        description: "SemVer Tag - SemVer Tag - Cleaned up so that NuGet can correctly consume it"
+        value: ${{ jobs.clean-up-version-stamp.outputs.NuGetSemVerTag }}
+      PIPSemVerTag:
+        description: "SemVer Tag - Cleaned up so that PIP can correctly consume it"
+        value: ${{ jobs.clean-up-version-stamp.outputs.PIPSemVerTag }}
+      DockerSemVerTag:
+        description: "Semver Tag - Cleaned up so that Docker can correctly consume it"
+        value: ${{ jobs.clean-up-version-stamp.outputs.DockerSemVerTag }}
+      CommitsInBranch:
+        description: "Commits in the Branch - Useful to name other things"
+        value: ${{ jobs.calculate-new-version.outputs.Commits }}
+      BranchName:
+        description: "Name of the Branch - Useful to name other things"
+        value: ${{ jobs.calculate-new-version.outputs.BranchName }}
 
 jobs:
   calculate-new-version:
