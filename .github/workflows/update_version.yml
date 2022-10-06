@@ -94,9 +94,9 @@ jobs:
         id: get-b2v-tag
         run: |
           if ${{ inputs.use-nuget-semver }}; then
-            echo "::set-output name=bump_2_version_semver::${{ needs.clean-up-version-stamp.outputs.PIPSemVerTag }}"
-          else ## Use Nuget Version instead
             echo "::set-output name=bump_2_version_semver::${{ needs.clean-up-version-stamp.outputs.NuGetSemVerTag }}"
+          else ## Use Nuget Version instead
+            echo "::set-output name=bump_2_version_semver::${{ needs.clean-up-version-stamp.outputs.PIPSemVerTag }}"
           fi
 
       - name: Install Bump2Version & Execute Bump Version
