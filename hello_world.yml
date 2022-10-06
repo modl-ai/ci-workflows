@@ -1,0 +1,19 @@
+on:
+  workflow_call:
+    inputs:
+      who_dis:
+        required: true
+        type: string
+      python_version:
+        required: false 
+        default: 3.9
+
+jobs:
+  print-python-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print the Python Version and Greeting
+        run: |
+          PY_VER=`python -V`
+          echo "Hello ${{ inputs.who_dis }}, the Python version is $PY_VER"
