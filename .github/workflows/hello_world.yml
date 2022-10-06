@@ -7,6 +7,7 @@ on:
       python_version:
         required: false 
         default: 3.9
+        type: number 
 
 jobs:
   print-python-version:
