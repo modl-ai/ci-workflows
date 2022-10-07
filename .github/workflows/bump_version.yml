@@ -11,6 +11,7 @@ on:
     outputs:
       NewSha:
         description: "Github SHA for commit after bump"
+        value: ${{ jobs.bump-version.outputs.post-commit-sha }}
 
 jobs:
   bump-version:
