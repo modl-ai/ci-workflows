@@ -1,18 +1,10 @@
 on:
   workflow_call:
     inputs:
-      bumpversion-cfg-path:
-        required: false
-        type: string
-        default: .bumpversion.cfg
       gitversion-config-path:
         required: false
         type: string
         default: GitVersion.yml
-      use-nuget-semver:
-        required: false
-        type: boolean
-        default: false
     outputs:
       NuGetSemVerTag:
         description: "SemVer Tag - SemVer Tag - Cleaned up so that NuGet can correctly consume it"
@@ -82,32 +74,3 @@ jobs:
             echo "::set-output name=new_version_docker::${{ needs.calculate-new-version.outputs.MajMinPatch }}-a.${{ steps.find-pr.outputs.pr }}-${{ needs.calculate-new-version.outputs.Commits }}"
           fi
           echo "::set-output name=new_version_nuget::${{ needs.calculate-new-version.outputs.NuGetSemVerTag }}"
-
-  bump-version:
-    name: Run Bump2Version
-    runs-on: ubuntu-latest
-    needs: [clean-up-version-stamp]
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Get Tag to use for Bump2Version
-        id: get-b2v-tag
-        run: |
-          if ${{ inputs.use-nuget-semver }}; then
-            echo "::set-output name=bump_2_version_semver::${{ needs.clean-up-version-stamp.outputs.NuGetSemVerTag }}"
-          else ## Use Nuget Version instead
-            echo "::set-output name=bump_2_version_semver::${{ needs.clean-up-version-stamp.outputs.PIPSemVerTag }}"
-          fi
-
-      - name: Install Bump2Version & Execute Bump Version
-        run: |
-          echo "Bump2Version ${{ steps.get-b2v-tag.outputs.bump_2_version_semver }}"
-          git config --global user.email "services@modl.ai"
-          git config --global user.name "marvin-modl"
-          python3 -m pip install bump2version
-          bump2version --new-version ${{ steps.get-b2v-tag.outputs.bump_2_version_semver }} all --config-file ${{ inputs.bumpversion-cfg-path }}
-
-      - name: Commit Changed Files
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Version Bumped to ${{ steps.get-b2v-tag.outputs.bump_2_version_semver }}
