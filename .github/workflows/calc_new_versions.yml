@@ -63,6 +63,7 @@ jobs:
       DockerSemVerTag: ${{ steps.clean-semver.outputs.new_version_docker }}
     steps:
       - uses: actions/checkout@v2
+        with:
           ref: ${{ inputs.gh_sha }}
       - uses: jwalton/gh-find-current-pr@v1
         id: find-pr
