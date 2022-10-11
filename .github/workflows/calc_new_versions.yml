@@ -5,6 +5,10 @@ on:
         required: false
         type: string
         default: GitVersion.yml
+      github_sha:
+        required: false
+        type: string
+        default: ${{ github.sha }}
     outputs:
       NuGetSemVerTag:
         description: "SemVer Tag - SemVer Tag - Cleaned up so that NuGet can correctly consume it"
@@ -37,6 +41,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0 ## Fetch-depth 0 is needed for GitVersion
+          ref: ${{ inputs.gh_sha }}
       - name: Install Gitversion
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
@@ -58,6 +63,7 @@ jobs:
       DockerSemVerTag: ${{ steps.clean-semver.outputs.new_version_docker }}
     steps:
       - uses: actions/checkout@v2
+          ref: ${{ inputs.gh_sha }}
       - uses: jwalton/gh-find-current-pr@v1
         id: find-pr
         with:

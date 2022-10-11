@@ -21,7 +21,6 @@ jobs:
       post-commit-sha: ${{ steps.sha.outputs.SHA }}
 
     steps:
-      - uses: actions/checkout@v2
       - name: Install Bump2Version & Execute Bump Version
         run: |
           echo "Bump2Version to ${{ inputs.new-version }}"
@@ -35,7 +34,7 @@ jobs:
         with:
           commit_message: Version Bumped to ${{ inputs.new-version }}
 
-      - name: get sha
+      - name: Get SHA of Latest Commit
         id: sha
         run: |
           sha_new=$(git rev-parse HEAD)
