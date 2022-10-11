@@ -38,7 +38,7 @@ jobs:
       BranchName: ${{ steps.gitversion.outputs.BranchName }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0 ## Fetch-depth 0 is needed for GitVersion
           ref: ${{ inputs.gh_sha }}
@@ -62,7 +62,7 @@ jobs:
       PIPSemVerTag: ${{ steps.clean-semver.outputs.new_version_pip }}
       DockerSemVerTag: ${{ steps.clean-semver.outputs.new_version_docker }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.gh_sha }}
       - uses: jwalton/gh-find-current-pr@v1
