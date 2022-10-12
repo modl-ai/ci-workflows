@@ -11,7 +11,7 @@ on:
         default: ${{ github.sha }}
     outputs:
       NuGetSemVerTag:
-        description: "SemVer Tag - SemVer Tag - Cleaned up so that NuGet can correctly consume it"
+        description: "SemVer Tag - Cleaned up so that NuGet can correctly consume it"
         value: ${{ jobs.clean-up-version-stamp.outputs.NuGetSemVerTag }}
       PIPSemVerTag:
         description: "SemVer Tag - Cleaned up so that PIP can correctly consume it"
