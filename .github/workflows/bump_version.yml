@@ -8,10 +8,6 @@ on:
         required: false
         type: string
         default: .bumpversion.cfg
-      checkout-at-sha:
-        required: false
-        type: string
-        default: ${{ github.sha }}
     outputs:
       NewSha:
         description: "Github SHA for commit after bump"
@@ -26,13 +22,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.checkout-at-sha }}
       - name: Install Bump2Version & Execute Bump Version
         run: |
           echo "Bump2Version to ${{ inputs.new-version }}"
-          git config --global user.email "services@modl.ai"
-          git config --global user.name "marvin-modl"
           python3 -m pip install bump2version
           bump2version --new-version ${{ inputs.new-version }} all --config-file ${{ inputs.bumpversion-cfg-path }}
 
@@ -40,6 +32,8 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Version Bumped to ${{ inputs.new-version }}
+          commit_user_name: "marvin-modl"
+          commit_user_email: "services@modl.ai"
 
       - name: Get SHA of Latest Commit
         id: sha
