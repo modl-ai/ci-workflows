@@ -5,7 +5,7 @@ on:
         required: false
         type: string
         default: GitVersion.yml
-      github_sha:
+      checkout-at-sha:
         required: false
         type: string
         default: ${{ github.sha }}
@@ -64,7 +64,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.gh_sha }}
+          ref: ${{ inputs.checkout-at-sha }}
       - uses: jwalton/gh-find-current-pr@v1
         id: find-pr
         with:

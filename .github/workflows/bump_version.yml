@@ -8,6 +8,10 @@ on:
         required: false
         type: string
         default: .bumpversion.cfg
+      checkout-at-sha:
+        required: false
+        type: string
+        default: ${{ gitub.sha }}
     outputs:
       NewSha:
         description: "Github SHA for commit after bump"
@@ -22,6 +26,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.checkout-at-sha }}
       - name: Install Bump2Version & Execute Bump Version
         run: |
           echo "Bump2Version to ${{ inputs.new-version }}"
