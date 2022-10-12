@@ -55,7 +55,7 @@ jobs:
         tags: ${{ inputs.image-name }}:${{ inputs.image-version }}
         push: true
         secrets: |
-          ${{ inputs.DOCKER_BUILD_SECRETS }}
+          "${{ inputs.DOCKER_BUILD_SECRETS }}"
 
     - name: Tag and Push ${{ inputs.image-name }}:latest [Main Only]
       if: ${{ inputs.update-latest }}
