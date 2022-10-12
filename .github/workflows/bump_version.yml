@@ -11,7 +11,7 @@ on:
       checkout-at-sha:
         required: false
         type: string
-        default: ${{ gitub.sha }}
+        default: ${{ github.sha }}
     outputs:
       NewSha:
         description: "Github SHA for commit after bump"
