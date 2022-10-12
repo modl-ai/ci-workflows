@@ -10,7 +10,7 @@ on:
         type: string
       update-latest:
         required: false
-        type: bool
+        type: boolean
         default: false
       dockerfile_path:
         required: false
