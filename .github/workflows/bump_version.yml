@@ -25,6 +25,8 @@ jobs:
       - name: Install Bump2Version & Execute Bump Version
         run: |
           echo "Bump2Version to ${{ inputs.new-version }}"
+          git config --global user.email "services@modl.ai"
+          git config --global user.name "marvin-modl"
           python3 -m pip install bump2version
           bump2version --new-version ${{ inputs.new-version }} all --config-file ${{ inputs.bumpversion-cfg-path }}
 
