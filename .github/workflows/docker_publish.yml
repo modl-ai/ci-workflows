@@ -42,12 +42,18 @@ jobs:
     steps:
     - name: Set tags
       run: | 
+        if (( ${{ inputs.image-version-prefix }} == '' )) 
+        then 
+          prefix=""
+        else 
+          prefix="${{ inputs.image-version-prefix }}-"
+        fi 
+        tags="${{ inputs.image-name }}:${prefix}${{ inputs.image-version }}" 
         if ${{ inputs.update-latest }}
         then 
-          echo "tags=${{ env.IMAGE_WITH_SEMVER }},${{ env.LATEST }}" >> $GITHUB_ENV
-        else
-          echo "tags=${{ env.IMAGE_WITH_SEMVER }}" >> $GITHUB_ENV
+          tags="${tags},${{ inputs.image-name }}:${prefix}latest"
         fi
+        echo "tags=${tags}" >> $GITHUB_ENV
 
     - uses: actions/checkout@v3
       with:
