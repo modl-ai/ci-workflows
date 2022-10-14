@@ -5,6 +5,10 @@ on:
       image-name:
         required: true
         type: string
+      image-version-prefix:
+        required: false
+        type: string
+        default: ''
       image-version:
         required: true
         type: string
@@ -32,6 +36,9 @@ jobs:
   push-to-docker:
     name: Push Image to Docker Hub
     runs-on: ubuntu-latest
+    env:
+      IMAGE_WITH_SEMVER: ${{ inputs.image-name }}:${{ inputs.image-version-prefix }}${{ inputs.image-version }}
+      IMAGE_LATEST: ${{ inputs.image-name }}:${{ inputs.image-version-prefix }}latest
     steps:
     - uses: actions/checkout@v3
       with:
@@ -46,19 +53,19 @@ jobs:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-    - name: Build and Push ${{ inputs.image-name }}:${{ inputs.image-version }}
+    - name: Build and Push ${{ env.IMAGE_WITH_SEMVER }}
       uses: docker/build-push-action@v2
       with:
         context: .
         file: ${{ inputs.dockerfile-path }}
         build-args: ${{ secrets.build-args }}
-        tags: ${{ inputs.image-name }}:${{ inputs.image-version }}
+        tags: ${{ env.IMAGE_WITH_SEMVER }}
         push: true
         secrets: |
           ${{ secrets.DOCKER_BUILD_SECRETS }}
 
-    - name: Tag and Push ${{ inputs.image-name }}:latest [Main Only]
+    - name: Tag and Push ${{ env.IMAGE_LATEST }} [Main Only]
       if: ${{ inputs.update-latest }}
       run: |
-          docker tag ${{ inputs.image-name }}:${{ inputs.image-version }} ${{ inputs.image-name }}:latest
-          docker push ${{ inputs.image-name }}:latest
+          docker tag ${{ env.IMAGE_WITH_SEMVER }} ${{ env.IMAGE_LATEST }}
+          docker push $${{ env.IMAGE_LATEST }}
