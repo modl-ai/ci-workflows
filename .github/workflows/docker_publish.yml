@@ -43,11 +43,11 @@ jobs:
     - name: Set tags
       id: tags
       run: | 
-        if ${{ inputs.update-latest }}; 
+        if ${{ inputs.update-latest }}
         then 
-          echo "::set-output name=tags::${{env.IMAGE_WITH_SEMVER}},${{env.LATEST}}"; 
+          echo "tags=${{ env.IMAGE_WITH_SEMVER }},${{ env.LATEST }}" >> $GITHUB_ENV
         else
-          echo "::set-output name=tags::${{env.IMAGE_WITH_SEMVER}}"; 
+          echo "tags=${{ env.IMAGE_WITH_SEMVER }}" >> $GITHUB_ENV
         fi
 
     - uses: actions/checkout@v3
@@ -69,7 +69,7 @@ jobs:
         context: .
         file: ${{ inputs.dockerfile-path }}
         build-args: ${{ secrets.build-args }}
-        tags: ${{ steps.tags.outputs.tags }}
+        tags: ${{ env.tags }}
         push: true
         secrets: |
           ${{ secrets.DOCKER_BUILD_SECRETS }}
