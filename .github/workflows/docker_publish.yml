@@ -42,7 +42,7 @@ jobs:
     steps:
     - name: Set tags
       run: | 
-        if (( ${{ inputs.image-version-prefix }} == '' )) 
+        if [ '${{ inputs.image-version-prefix }}' == '' ] 
         then 
           prefix=""
         else 
