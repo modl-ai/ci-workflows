@@ -74,10 +74,10 @@ jobs:
         id: clean-semver
         run: |
           if [[ "${{ needs.calculate-new-version.outputs.BranchName }}" == "main" ]]; then
-            echo "::set-output name=new_version_pip::${{ needs.calculate-new-version.outputs.MajMinPatch }}"
-            echo "::set-output name=new_version_docker::${{ needs.calculate-new-version.outputs.MajMinPatch }}"
+            echo "new_version_pip=${{ needs.calculate-new-version.outputs.MajMinPatch }}" >> $GITHUB_OUTPUT
+            echo "new_version_docker=${{ needs.calculate-new-version.outputs.MajMinPatch }}" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=new_version_pip::${{ needs.calculate-new-version.outputs.MajMinPatch }}a${{ steps.find-pr.outputs.pr }}+${{ needs.calculate-new-version.outputs.Commits }}"
-            echo "::set-output name=new_version_docker::${{ needs.calculate-new-version.outputs.MajMinPatch }}-a.${{ steps.find-pr.outputs.pr }}-${{ needs.calculate-new-version.outputs.Commits }}"
+            echo "new_version_pip=${{ needs.calculate-new-version.outputs.MajMinPatch }}a${{ steps.find-pr.outputs.pr }}+${{ needs.calculate-new-version.outputs.Commits }}" >> $GITHUB_OUTPUT
+            echo "new_version_docker=${{ needs.calculate-new-version.outputs.MajMinPatch }}-a.${{ steps.find-pr.outputs.pr }}-${{ needs.calculate-new-version.outputs.Commits }}" >> $GITHUB_OUTPUT
           fi
-          echo "::set-output name=new_version_nuget::${{ needs.calculate-new-version.outputs.NuGetSemVerTag }}"
+          echo "new_version_nuget=${{ needs.calculate-new-version.outputs.NuGetSemVerTag }}" >> $GITHUB_OUTPUT
