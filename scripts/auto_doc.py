@@ -7,7 +7,7 @@ def input_to_md(name, details, header_lvl='####'):
     default = details.get('default', 'N/A')
     if len(default) == 0 or str.isspace(default):
         default = '[Empty String]'
-    result = f"""| {name} | {details.get('description', 'Missing Description - Please Talk to the Author of the Workflow to add a description')} | {details.get('type', 'Missing Type - This is probably an error')} | {details.get('required', False)} | { default }"""
+    result = f"""| {name} | {details.get('description', 'Missing Description - Please Talk to the Author of the Workflow to add a description')} | {details.get('type', 'Missing Type - This is probably an error')} | {details.get('required', False)} | { default } |"""
 
     return result
 
@@ -29,7 +29,7 @@ def workflow_to_doc(workflow_yml):
     if len(inputs):
         print("### Inputs: ")
         print("|*Name*|*Description*|*Type*|*Is Required?*|*Default Value (If not required)*|")
-        print("|----|----|----|----|----|")
+        print("|------|-------------|------|--------------|---------------------------------|")
     for (input_name, input_details) in inputs.items():
         print(input_to_md(input_name, input_details))
 
@@ -38,7 +38,7 @@ def workflow_to_doc(workflow_yml):
     if len(outputs):
         print("### Outputs: ")
         print("|*Name*|*Description*|")
-        print("|----|----|----|----|----|")
+        print("|------|-------------|")
     for (output_name, output_details) in outputs.items():
         print(output_to_md(output_name, output_details))
 
