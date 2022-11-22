@@ -21,7 +21,7 @@ jobs:
       - name: Update PIP and install YAML
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install yaml
+          python3 -m pip install pyyaml
 
       - name: Run the AutoDoc
         run: |
