@@ -4,6 +4,7 @@ on:
       who_dis:
         required: true
         type: string
+        description: "Who are we greeting?"
       python_version:
         required: false 
         default: 3.9

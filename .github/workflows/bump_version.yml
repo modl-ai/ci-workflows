@@ -4,10 +4,12 @@ on:
       new-version:
         required: true
         type: string
+        description: Target Version to which to bump
       bumpversion-cfg-path:
         required: false
         type: string
         default: .bumpversion.cfg
+        description: Path to the .bumpversion.cfg file (From repo root)
     outputs:
       NewSha:
         description: "Github SHA for commit after bump"

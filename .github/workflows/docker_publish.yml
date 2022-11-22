@@ -5,25 +5,31 @@ on:
       image-name:
         required: true
         type: string
+        description: Name of the image to be published (image-name:[image-version-prefix]image-version will be the final format for the tag)
       image-version-prefix:
         required: false
         type: string
         default: ''
+        description: Optional prefix for the image version (image-name:[image-version-prefix]image-version will be the final format for the tag)
       image-version:
         required: true
         type: string
+        description: Image version (image-name:[image-version-prefix]image-version will be the final format for the tag)
       update-latest:
         required: false
         type: boolean
         default: false
+        description: Do you also want to publish image-name:[image-version-prefix]latest? 
       dockerfile-path:
         required: false
         type: string
         default: ./Dockerfile
+        description: Path to the Dockerfile to use 
       checkout-at-sha:
         required: false
         type: string
         default: ${{ github.sha }}
+        description: Which commit hash should we use for checkout 
     secrets:
       DOCKER_HUB_PASSWORD:
         required: true
@@ -78,4 +84,3 @@ jobs:
         push: true
         secrets: |
           ${{ secrets.DOCKER_BUILD_SECRETS }}
-

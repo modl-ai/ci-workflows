@@ -5,10 +5,12 @@ on:
         required: false
         type: string
         default: GitVersion.yml
+        description: Path to GitVersion.yml (from repo root)
       checkout-at-sha:
         required: false
         type: string
         default: ${{ github.sha }}
+        description: Which commit hash should we use for checkout 
     outputs:
       NuGetSemVerTag:
         description: "SemVer Tag - Cleaned up so that NuGet can correctly consume it"
