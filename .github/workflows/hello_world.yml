@@ -1,3 +1,4 @@
+name: Greeting Example for Reusable Workflows
 on:
   workflow_call:
     inputs:

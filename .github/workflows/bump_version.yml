@@ -1,3 +1,4 @@
+name: Use Bump2Version to Update Version in Required Files 
 on:
   workflow_call:
     inputs:

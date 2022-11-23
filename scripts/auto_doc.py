@@ -16,6 +16,12 @@ def output_to_md(name, details, header_lvl='####'):
     result = f"""| {name} | {details.get('description', 'Missing Description - Please Talk to the Author of the Workflow to add a description')} |"""
     return result
 
+def secret_to_md(name, details, headler_lvl='####'):
+    result = f"""\
+| {name} | {details.get('description', 'Missing Description - Please Talk to the Author of the Workflow to add a description')} |\
+  {details.get('required', False)} |"""
+    return result
+
 
 
 def workflow_to_doc(workflow_yml):
@@ -23,6 +29,7 @@ def workflow_to_doc(workflow_yml):
     name = workflow_yml['name']
 
     print(f'## {name}')
+    print(f"Workflow File: [{workflow_yml['file_name']}]({workflow_yml['full_path']})")
 
     ## Get Inputs from workflow and create the corresponding text
     inputs = workflow_yml['on']['workflow_call'].get('inputs', {}) ## We can allow for no inputs, but not for lacking on or workflow_call 
@@ -41,6 +48,15 @@ def workflow_to_doc(workflow_yml):
         print("|------|-------------|")
     for (output_name, output_details) in outputs.items():
         print(output_to_md(output_name, output_details))
+
+    ## Get Secrets from workflow and create the corresponding text
+    secrets = workflow_yml['on']['workflow_call'].get('secrets', {}) ## We can allow for no secrets, but not for lacking on or workflow_call 
+    if len(secrets):
+        print("### Secrets: ")
+        print("|*Name*|*Description*|*Is Required?*")
+        print("|------|-------------|-------------|")
+    for (secret_name, secret_details) in secrets.items():
+        print(secret_to_md(secret_name, secret_details))
 
     print('##')
 
@@ -66,6 +82,9 @@ if __name__ == '__main__':
 
         wf_file = open(wf_file_path)
         loaded_yml = yaml.load(wf_file, yaml.BaseLoader)
+
+        loaded_yml['file_name'] = file_name
+        loaded_yml['full_path'] = wf_file_path
 
         if not 'name' in loaded_yml:
             loaded_yml['name'] = file_name 
