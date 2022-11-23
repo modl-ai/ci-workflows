@@ -1,5 +1,9 @@
 ## Use GitVersion to calculate the appropriate SemVer for this Commit
-Workflow File: [calc_new_versions.yml](.github/workflows/calc_new_versions.yml)
+**Workflow File**: [calc_new_versions.yml](.github/workflows/calc_new_versions.yml)  
+**Description**: This workflow uses GitVersion to calculate the appropriate SemVer for the commit on which the
+workflow is triggered.
+See the Outputs section, as this action generates a variety of tags that can be used later for versioning
+or artifact tagging.
 ### Inputs: 
 |*Name*|*Description*|*Type*|*Is Required?*|*Default Value (If not required)*|
 |------|-------------|------|--------------|---------------------------------|
@@ -13,9 +17,13 @@ Workflow File: [calc_new_versions.yml](.github/workflows/calc_new_versions.yml)
 | DockerSemVerTag | Semver Tag - Cleaned up so that Docker can correctly consume it |
 | CommitsInBranch | Commits in the Branch - Useful to name other things |
 | BranchName | Name of the Branch - Useful to name other things |
-##
 ## Build and Publish Docker Images to Docker Hub
-Workflow File: [docker_publish.yml](.github/workflows/docker_publish.yml)
+**Workflow File**: [docker_publish.yml](.github/workflows/docker_publish.yml)  
+**Description**: This workflow is for building and publishing Docker images to a docker hub repository given a
+Dockerfile and the appropriate credentials.
+The published image will be tagged in the following format: `image-name:[image-version-prefix-]image-version`
+<br>
+Note that the `image-version-prefix` is entirely optional and can be ommitted if it doesn't make sense for your use case.
 ### Inputs: 
 |*Name*|*Description*|*Type*|*Is Required?*|*Default Value (If not required)*|
 |------|-------------|------|--------------|---------------------------------|
@@ -31,9 +39,13 @@ Workflow File: [docker_publish.yml](.github/workflows/docker_publish.yml)
 | DOCKER_HUB_PASSWORD | hub.docker.com Personal Access Token (PAT) |  true |
 | DOCKER_HUB_USERNAME | hub.docker.com username |  true |
 | DOCKER_BUILD_SECRETS | Any secrets needed by the docker build step |  false |
-##
 ## Use Bump2Version to Update Version in Required Files
-Workflow File: [bump_version.yml](.github/workflows/bump_version.yml)
+**Workflow File**: [bump_version.yml](.github/workflows/bump_version.yml)  
+**Description**: This workflow uses bump2version to keep any files (like setup.py and similar) with the correct
+version stamp.
+It will update the files and create a new commit.
+If you need to use the repository after you run this action, remember to use the NewSha as input for
+your `action/checkout@vX`
 ### Inputs: 
 |*Name*|*Description*|*Type*|*Is Required?*|*Default Value (If not required)*|
 |------|-------------|------|--------------|---------------------------------|
@@ -43,12 +55,12 @@ Workflow File: [bump_version.yml](.github/workflows/bump_version.yml)
 |*Name*|*Description*|
 |------|-------------|
 | NewSha | Github SHA for commit after bump |
-##
 ## Greeting Example for Reusable Workflows
-Workflow File: [hello_world.yml](.github/workflows/hello_world.yml)
+**Workflow File**: [hello_world.yml](.github/workflows/hello_world.yml)  
+**Description**: This workflow is an example to introduce developers to the concept of
+reusable workflows.
 ### Inputs: 
 |*Name*|*Description*|*Type*|*Is Required?*|*Default Value (If not required)*|
 |------|-------------|------|--------------|---------------------------------|
 | who_dis | Who are we greeting? | string | true | N/A |
-| python_version | Missing Description - Please Talk to the Author of the Workflow to add a description | number | false | 3.9 |
-##
+| python_version | Which Python should greet them? | number | false | 3.9 |
