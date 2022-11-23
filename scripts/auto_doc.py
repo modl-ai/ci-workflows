@@ -29,7 +29,8 @@ def workflow_to_doc(workflow_yml):
     name = workflow_yml['name']
 
     print(f'## {name}')
-    print(f"Workflow File: [{workflow_yml['file_name']}]({workflow_yml['full_path']})")
+    print(f"**Workflow File**: [{workflow_yml['file_name']}]({workflow_yml['full_path']})  ")
+    print(f"**Description**: {workflow_yml['verbose_desc']}")
 
     ## Get Inputs from workflow and create the corresponding text
     inputs = workflow_yml['on']['workflow_call'].get('inputs', {}) ## We can allow for no inputs, but not for lacking on or workflow_call 
@@ -58,8 +59,44 @@ def workflow_to_doc(workflow_yml):
     for (secret_name, secret_details) in secrets.items():
         print(secret_to_md(secret_name, secret_details))
 
-    print('##')
 
+def extract_desc_comment(lines):
+    desc = [] 
+    start_token = '<--DESC-->'
+    end_token   = '<!--DESC-->'
+    started = False
+    ended = False
+
+    ## First skip all lines that arent relevant until
+    ## we find the description start token
+    for i in range(0, len(lines)):
+        l = lines[i]
+        if l[0] == '#' and start_token in l:
+            started = True
+            break
+
+    ## Grab all comments after the start token, and up until
+    ## we find the end token
+    for j in range(i+1, len(lines)): 
+        l = lines[j]
+
+        if l[0] == '#':
+            if end_token in l:
+                ## Flatten the list of lines into one
+                desc = '\n'.join(desc)
+                ended = True
+                break
+
+            desc.append(l[1:].strip())
+
+    if not started:
+        desc = "No Description Provided"
+
+    if started and not ended:
+        ## This is an incorrect
+        desc = "Description is incorrectly formatted - This is an error"
+
+    return desc
 
 
 if __name__ == '__main__':
@@ -81,10 +118,17 @@ if __name__ == '__main__':
             continue
 
         wf_file = open(wf_file_path)
-        loaded_yml = yaml.load(wf_file, yaml.BaseLoader)
+
+        lines = wf_file.readlines()
+
+        description = extract_desc_comment(lines)
+
+        ## Rejoin the lines so the yaml library can read it as a single string
+        loaded_yml = yaml.load('\n'.join(lines), yaml.BaseLoader)
 
         loaded_yml['file_name'] = file_name
         loaded_yml['full_path'] = wf_file_path
+        loaded_yml['verbose_desc'] = description
 
         if not 'name' in loaded_yml:
             loaded_yml['name'] = file_name 

@@ -1,3 +1,9 @@
+## <--DESC-->
+# This workflow uses GitVersion to calculate the appropriate SemVer for the commit on which the
+# workflow is triggered.
+# See the Outputs section, as this action generates a variety of tags that can be used later for versioning
+# or artifact tagging.
+## <!--DESC-->
 name: Use GitVersion to calculate the appropriate SemVer for this Commit
 on:
   workflow_call:

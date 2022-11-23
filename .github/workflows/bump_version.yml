@@ -1,3 +1,10 @@
+## <--DESC-->
+# This workflow uses bump2version to keep any files (like setup.py and similar) with the correct
+# version stamp.  
+# It will update the files and create a new commit.
+# If you need to use the repository after you run this action, remember to use the NewSha as input for
+# your `action/checkout@vX`
+## <!--DESC-->
 name: Use Bump2Version to Update Version in Required Files 
 on:
   workflow_call:

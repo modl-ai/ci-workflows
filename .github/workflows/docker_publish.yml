@@ -1,3 +1,10 @@
+## <--DESC-->
+# This workflow is for building and publishing Docker images to a docker hub repository given a
+# Dockerfile and the appropriate credentials.
+# The published image will be tagged in the following format: `image-name:[image-version-prefix-]image-version`
+# <br>
+# Note that the `image-version-prefix` is entirely optional and can be ommitted if it doesn't make sense for your use case.
+## <!--DESC-->
 name: Build and Publish Docker Images to Docker Hub
 on:
   workflow_call:
