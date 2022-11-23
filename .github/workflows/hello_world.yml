@@ -1,0 +1,31 @@
+## <--DESC-->
+# This workflow is an example to introduce developers to the concept of
+# reusable workflows.
+## <!--DESC-->
+name: Greeting Example for Reusable Workflows
+on:
+  workflow_call:
+    inputs:
+      who_dis:
+        required: true
+        type: string
+        description: "Who are we greeting?"
+      python_version:
+        required: false 
+        default: 3.9
+        type: number 
+        description: "Which Python should greet them?"
+
+jobs:
+  print-python-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Python to version ${{ inputs.python_version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python_version }}
+      - name: Print the Python Version and Greeting
+        run: |
+          PY_VER=`python3 -V`
+          echo "Hello ${{ inputs.who_dis }}, the Python version is $PY_VER"

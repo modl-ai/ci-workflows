@@ -1,0 +1,92 @@
+## <--DESC-->
+# This workflow uses GitVersion to calculate the appropriate SemVer for the commit on which the
+# workflow is triggered.
+# See the Outputs section, as this action generates a variety of tags that can be used later for versioning
+# or artifact tagging.
+## <!--DESC-->
+name: Use GitVersion to calculate the appropriate SemVer for this Commit
+on:
+  workflow_call:
+    inputs:
+      gitversion-config-path:
+        required: false
+        type: string
+        default: GitVersion.yml
+        description: Path to GitVersion.yml (from repo root)
+      checkout-at-sha:
+        required: false
+        type: string
+        default: ${{ github.sha }}
+        description: Which commit hash should we use for checkout 
+    outputs:
+      NuGetSemVerTag:
+        description: "SemVer Tag - Cleaned up so that NuGet can correctly consume it"
+        value: ${{ jobs.clean-up-version-stamp.outputs.NuGetSemVerTag }}
+      PIPSemVerTag:
+        description: "SemVer Tag - Cleaned up so that PIP can correctly consume it"
+        value: ${{ jobs.clean-up-version-stamp.outputs.PIPSemVerTag }}
+      DockerSemVerTag:
+        description: "Semver Tag - Cleaned up so that Docker can correctly consume it"
+        value: ${{ jobs.clean-up-version-stamp.outputs.DockerSemVerTag }}
+      CommitsInBranch:
+        description: "Commits in the Branch - Useful to name other things"
+        value: ${{ jobs.calculate-new-version.outputs.Commits }}
+      BranchName:
+        description: "Name of the Branch - Useful to name other things"
+        value: ${{ jobs.calculate-new-version.outputs.BranchName }}
+
+jobs:
+  calculate-new-version:
+    name: Calculate New Version Stamp using GitVersion
+    runs-on: ubuntu-latest
+
+    outputs:
+      NuGetSemVerTag: ${{ steps.gitversion.outputs.nuGetVersionV2 }}
+      MajMinPatch: ${{ steps.gitversion.outputs.MajorMinorPatch }}
+      Commits: ${{ steps.gitversion.outputs.CommitsSinceVersionSource }}
+      BranchName: ${{ steps.gitversion.outputs.BranchName }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 ## Fetch-depth 0 is needed for GitVersion
+          ref: ${{ inputs.gh_sha }}
+      - name: Install Gitversion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: '5.x'
+      - name: Run GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          useConfigFile: true
+          configFilePath: ${{ inputs.gitversion-config-path }}
+
+  clean-up-version-stamp:
+    name: Create the SemVer Tags for the different needs we have (NuGet, PIP, Docker)
+    runs-on: ubuntu-latest
+    needs: [calculate-new-version]
+    outputs:
+      NuGetSemVerTag: ${{ steps.clean-semver.outputs.new_version_nuget }}
+      PIPSemVerTag: ${{ steps.clean-semver.outputs.new_version_pip }}
+      DockerSemVerTag: ${{ steps.clean-semver.outputs.new_version_docker }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.checkout-at-sha }}
+      - uses: jwalton/gh-find-current-pr@v1
+        id: find-pr
+        with:
+          state: open
+
+      - name: Clean SemVer Tags for different needs
+        id: clean-semver
+        run: |
+          if [[ "${{ needs.calculate-new-version.outputs.BranchName }}" == "main" ]]; then
+            echo "new_version_pip=${{ needs.calculate-new-version.outputs.MajMinPatch }}" >> $GITHUB_OUTPUT
+            echo "new_version_docker=${{ needs.calculate-new-version.outputs.MajMinPatch }}" >> $GITHUB_OUTPUT
+          else
+            echo "new_version_pip=${{ needs.calculate-new-version.outputs.MajMinPatch }}a${{ steps.find-pr.outputs.pr }}+${{ needs.calculate-new-version.outputs.Commits }}" >> $GITHUB_OUTPUT
+            echo "new_version_docker=${{ needs.calculate-new-version.outputs.MajMinPatch }}-a.${{ steps.find-pr.outputs.pr }}-${{ needs.calculate-new-version.outputs.Commits }}" >> $GITHUB_OUTPUT
+          fi
+          echo "new_version_nuget=${{ needs.calculate-new-version.outputs.NuGetSemVerTag }}" >> $GITHUB_OUTPUT

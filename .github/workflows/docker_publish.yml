@@ -1,0 +1,96 @@
+## <--DESC-->
+# This workflow is for building and publishing Docker images to a docker hub repository given a
+# Dockerfile and the appropriate credentials.
+# The published image will be tagged in the following format: `image-name:[image-version-prefix-]image-version`
+# <br>
+# Note that the `image-version-prefix` is entirely optional and can be ommitted if it doesn't make sense for your use case.
+## <!--DESC-->
+name: Build and Publish Docker Images to Docker Hub
+on:
+  workflow_call:
+    inputs:
+      image-name:
+        required: true
+        type: string
+        description: Name of the image to be published (image-name:[image-version-prefix]image-version will be the final format for the tag)
+      image-version-prefix:
+        required: false
+        type: string
+        default: ''
+        description: Optional prefix for the image version (image-name:[image-version-prefix]image-version will be the final format for the tag)
+      image-version:
+        required: true
+        type: string
+        description: Image version (image-name:[image-version-prefix]image-version will be the final format for the tag)
+      update-latest:
+        required: false
+        type: boolean
+        default: false
+        description: Do you also want to publish image-name:[image-version-prefix]latest? 
+      dockerfile-path:
+        required: false
+        type: string
+        default: ./Dockerfile
+        description: Path to the Dockerfile to use 
+      checkout-at-sha:
+        required: false
+        type: string
+        default: ${{ github.sha }}
+        description: Which commit hash should we use for checkout 
+    secrets:
+      DOCKER_HUB_PASSWORD:
+        required: true
+        description: 'hub.docker.com Personal Access Token (PAT)'
+      DOCKER_HUB_USERNAME:
+        required: true
+        description: 'hub.docker.com username'
+      DOCKER_BUILD_SECRETS:
+        required: false
+        description: 'Any secrets needed by the docker build step'
+
+jobs:
+  push-to-docker:
+    name: Push Image to Docker Hub
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_WITH_SEMVER: ${{ inputs.image-name }}:${{ inputs.image-version-prefix }}${{ inputs.image-version }}
+      IMAGE_LATEST: ${{ inputs.image-name }}:${{ inputs.image-version-prefix }}latest
+    steps:
+    - name: Set tags
+      run: | 
+        if [ '${{ inputs.image-version-prefix }}' == '' ] 
+        then 
+          prefix=""
+        else 
+          prefix="${{ inputs.image-version-prefix }}-"
+        fi 
+        tags="${{ inputs.image-name }}:${prefix}${{ inputs.image-version }}" 
+        if ${{ inputs.update-latest }}
+        then 
+          tags="${tags},${{ inputs.image-name }}:${prefix}latest"
+        fi
+        echo "tags=${tags}" >> $GITHUB_ENV
+
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.checkout-at-sha }}
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Login to docker hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+    - name: Build and Push ${{ env.tags }}
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ${{ inputs.dockerfile-path }}
+        build-args: ${{ secrets.build-args }}
+        tags: ${{ env.tags }}
+        push: true
+        secrets: |
+          ${{ secrets.DOCKER_BUILD_SECRETS }}

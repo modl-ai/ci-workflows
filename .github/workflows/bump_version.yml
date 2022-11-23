@@ -1,0 +1,55 @@
+## <--DESC-->
+# This workflow uses bump2version to keep any files (like setup.py and similar) with the correct
+# version stamp.  
+# It will update the files and create a new commit.
+# If you need to use the repository after you run this action, remember to use the NewSha as input for
+# your `action/checkout@vX`
+## <!--DESC-->
+name: Use Bump2Version to Update Version in Required Files 
+on:
+  workflow_call:
+    inputs:
+      new-version:
+        required: true
+        type: string
+        description: Target Version to which to bump
+      bumpversion-cfg-path:
+        required: false
+        type: string
+        default: .bumpversion.cfg
+        description: Path to the .bumpversion.cfg file (From repo root)
+    outputs:
+      NewSha:
+        description: "Github SHA for commit after bump"
+        value: ${{ jobs.bump-version.outputs.post-commit-sha }}
+
+jobs:
+  bump-version:
+    name: Run Bump2Version
+    runs-on: ubuntu-latest
+    outputs:
+      post-commit-sha: ${{ steps.sha.outputs.SHA }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Bump2Version & Execute Bump Version
+        run: |
+          echo "Bump2Version to ${{ inputs.new-version }}"
+          git config --global user.email "services@modl.ai"
+          git config --global user.name "marvin-modl"
+          python3 -m pip install bump2version
+          bump2version --new-version ${{ inputs.new-version }} all --config-file ${{ inputs.bumpversion-cfg-path }}
+
+      - name: Commit Changed Files
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Version Bumped to ${{ inputs.new-version }}
+          commit_user_name: "marvin-modl"
+          commit_user_email: "services@modl.ai"
+
+      - name: Get SHA of Latest Commit
+        id: sha
+        run: |
+          sha_new=$(git rev-parse HEAD)
+          echo $sha_new
+          echo "SHA=$sha_new" >> $GITHUB_OUTPUT
